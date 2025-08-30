@@ -81,6 +81,7 @@ $$
 \text{index}_{\text{new}} = \text{index}_{\text{old}} \cdot (1 - r_{\text{eff}})
 $$
 
+
 All liquid balances scale by the index. Savings/vault balances sit outside the decay path and are never decayed.
 
 ### 4.3 Savings Exemption
