@@ -72,7 +72,7 @@ $$
 - **Isotope blend (weights sum to 1)**
 
 $$
-r_{\text{eff}} = \sum_i w_i \cdot \big(1 - 2^{-\Delta t / T_{1/2,i}}\big)
+r_{\text{eff}} = \sum_i w_i \cdot \Big(1 - 2^{-\Delta t / T_{1/2,i}}\Big)
 $$
 
 - **Global liquid index update (O(1))**
@@ -81,13 +81,16 @@ $$
 \text{index}_{\text{new}} = \text{index}_{\text{old}} \cdot (1 - r_{\text{eff}})
 $$
 
-
 All liquid balances scale by the index. Savings/vault balances sit outside the decay path and are never decayed.
+
+---
 
 ### 4.3 Savings Exemption
 
 - Users can move funds Liquid ⇄ Savings; savings are decay-free.  
 - Optional anti-gaming lock window (default 0) can snapshot savings at epoch start without penalizing genuine savers.  
+
+---
 
 ### 4.4 Isotope Coupling (optional)
 
