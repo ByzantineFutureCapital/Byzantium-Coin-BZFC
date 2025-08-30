@@ -22,7 +22,7 @@ Byzantium-Coin™ (BZFC) is a PoSA-secured Layer-1 chain designed for predictabl
 
 - **Name / Ticker:** Byzantium-Coin™ / BZFC  
 - **Max Supply:** 21 trillion BZFC (21,000,000,000,000)  
-- **Decimals:** 17 (base unit = 10^-17 BZFC)  
+- **Decimals:** 17 (base unit = $10^{-17}$ BZFC)  
 - **Consensus:** PoSA (authority set via staking & governance)  
 - **Monetary Policy:** Half-life decay (on/off), optional isotope blend, 1 day → 1000 years range; savings exempt  
 - **Fees:** Flexible model (Flat or EIP-1559-style), per-namespace add/mult, optional tips; configurable burn split  
@@ -44,7 +44,7 @@ BZFC organizes policy and modules by Greek namespaces with Roman numerals for ed
 - **Ψ (Psi):** Insurance pools, pot ratios, actuarial models  
   - Examples: Ψ-III → 3rd actuarial release for marine risk  
 - **Λ (Lambda):** Wrapping, derivative issuance, cross-chain certificates  
-  - Examples: Λ-I → first derivative wrapping module for treasury vaults  
+  - Examples: Λ-I → first derivative wrapping module for treasury vaults
 
 **Case Example:** A refinery submits a steel batch for verification. SHR routes to Θ-II, locking compliance checks to Rulebook Edition II. Future rulebooks (Θ-III, Θ-IV) do not alter the original audit record.
 
@@ -57,7 +57,7 @@ BZFC organizes policy and modules by Greek namespaces with Roman numerals for ed
 - Predictable, configurable supply reduction via half-life decay  
 - Opt-in burns that never penalize savings/vault balances  
 - Optional isotope model for multi-component decay tuned to different horizons  
-- Configurable off/on at governance level; 1 day → 1000 years half-life range (max 1000y)  
+- Configurable off/on at governance level; 1 day → 1000 years half-life range (max 1000y)
 
 ### 4.2 Mechanics (on-chain friendly)
 
@@ -81,22 +81,17 @@ $$
 \text{index}_{\text{new}} = \text{index}_{\text{old}} \cdot (1 - r_{\text{eff}})
 $$
 
-
 All liquid balances scale by the index. Savings/vault balances sit outside the decay path and are never decayed.
-
----
 
 ### 4.3 Savings Exemption
 
 - Users can move funds Liquid ⇄ Savings; savings are decay-free.  
-- Optional anti-gaming lock window (default 0) can snapshot savings at epoch start without penalizing genuine savers.  
-
----
+- Optional anti-gaming lock window (default 0) can snapshot savings at epoch start without penalizing genuine savers.
 
 ### 4.4 Isotope Coupling (optional)
 
 - Governance can enable isotope coupling to consider aggregate burns as a signal for component weights/rates.  
-- This remains opt-in and editioned via Ω rulebooks for auditability.  
+- This remains opt-in and editioned via Ω rulebooks for auditability.
 
 ---
 
@@ -106,7 +101,7 @@ All liquid balances scale by the index. Savings/vault balances sit outside the d
 - **Per-namespace knobs:** additive fee (base units) + multiplier (bps) per module (Ω/Θ/Ψ/Λ).  
 - **Tips:** optional user tips added to total fees.  
 - **Burn split:** BurnBps defines what % of fees is burned vs accrued to Treasury.  
-- **Events & metrics:** emit FeeCharged{total,burned,treasury}; track block-level activity.  
+- **Events & metrics:** emit `FeeCharged{total,burned,treasury}`; track block-level activity.
 
 Note: In production, chains commonly integrate with pallet-transaction-payment for tx fees. BZFC exposes a pallet-level fee framework for fine-grained, namespace-aware policies and on-chain analytics.
 
@@ -116,7 +111,7 @@ Note: In production, chains commonly integrate with pallet-transaction-payment f
 
 - 1:1 wrapping for institutional or customer-specific applications.  
 - Underlying BZFC is moved from Liquid → Savings (vault) during the wrap, making it decay-exempt while wrapped.  
-- `wrap_mint(policy, amount)` and `wrap_burn(policy, amount)` manage lifecycle; policies carry metadata hashes (e.g., IPFS CIDs) and shielding rules.  
+- `wrap_mint(policy, amount)` and `wrap_burn(policy, amount)` manage lifecycle; policies carry metadata hashes (e.g., IPFS CIDs) and shielding rules.
 
 ---
 
@@ -124,7 +119,7 @@ Note: In production, chains commonly integrate with pallet-transaction-payment f
 
 - Register / update / lock Rulebook editions (Θ-II, Θ-III, …). Once locked, a rulebook is immutable.  
 - Attestations bind a `subject_hash` (e.g., steel batch) to an edition with a `payload_hash` (e.g., PMI report) + optional evidence hashes.  
-- Annotations (Info / Supersede / Revoke / Reject) are append-only; prior records remain intact.  
+- Annotations (Info / Supersede / Revoke / Reject) are append-only; prior records remain intact.
 
 **Assurance:** Auditors and regulators can rely on the fact that later editions never rewrite earlier attestations.
 
@@ -135,7 +130,7 @@ Note: In production, chains commonly integrate with pallet-transaction-payment f
 - Governance creates pools with pot ratios, reserve floors, per-claim caps, and min collateral.  
 - **Premiums:** user Liquid → pool vault Savings (decay-exempt while pooled).  
 - **Claims:** vault Savings → claimant Liquid, enforcing solvency rails.  
-- Transparent counters for premiums in / payouts out; designed for actuarial analytics.  
+- Transparent counters for premiums in / payouts out; designed for actuarial analytics.
 
 ---
 
@@ -143,7 +138,7 @@ Note: In production, chains commonly integrate with pallet-transaction-payment f
 
 - PoSA: a vetted validator/authority set participates in block production and finality.  
 - Rotation & staking managed via Substrate Session/Aura with governance controls.  
-- Bootstrapping: start with a small authority set; expand/rotate as decentralization increases.  
+- Bootstrapping: start with a small authority set; expand/rotate as decentralization increases.
 
 ---
 
@@ -153,7 +148,7 @@ Note: In production, chains commonly integrate with pallet-transaction-payment f
 - **Unit Precision:** 17 decimals  
 - **Emissions/Reductions:** Supply reduction driven by decay burns and fee burns per rulebook editions.  
 - **Savings/Vaults:** Never decay; principal protected from automatic burns.  
-- **Wrapping:** Neutral to total supply; wrapped units are claims on saved principal.  
+- **Wrapping:** Neutral to total supply; wrapped units are claims on saved principal.
 
 **Circulating Supply & Allocation:** To be finalized at mainnet genesis and disclosed in the public chainspec and explorer. BZFC’s framework supports transparent genesis endowments, vesting, and on-chain tracking of burns.
 
@@ -164,7 +159,7 @@ Note: In production, chains commonly integrate with pallet-transaction-payment f
 - **Scaling:** Use Perquintill precision (1e18) for per-epoch rates and indices.  
 - **Index accounting:** global pooling ensures O(1) decay application; avoids map iteration.  
 - **Reference CLI:** The repo includes a Half-Life CLI to compute $r_{\text{epoch}}$ for any half-life in 1 day → 1000 years.  
-- **Runtime integration:** Substrate FRAME pallets (Ω/Λ/Θ/Ψ), SHR Router, governance origins, and PoSA wiring stubs are provided.  
+- **Runtime integration:** Substrate FRAME pallets (Ω/Λ/Θ/Ψ), SHR Router, governance origins, and PoSA wiring stubs are provided.
 
 ---
 
@@ -172,15 +167,15 @@ Note: In production, chains commonly integrate with pallet-transaction-payment f
 
 Governance Origin controls decay mode, isotope parameters, fee model, burn split, namespace fees, savings lock window, rulebook lifecycle, and Ψ pool parameters.  
 Early phases may use Root/Sudo; transition paths include councils or multisig collectives.  
-All parameter changes emit events for auditability.  
+All parameter changes emit events for auditability.
 
 ---
 
 ## 13) Compliance & Auditability
 
-- **Event-rich design:** DecayApplied, FeeCharged, WrapMinted/WrapBurned, Attested/Annotated, PremiumPaid/ClaimPaid.  
+- **Event-rich design:** `DecayApplied`, `FeeCharged`, `WrapMinted`/`WrapBurned`, `Attested`/`Annotated`, `PremiumPaid`/`ClaimPaid`.  
 - **Tooling:** command-line audit parser (JSONL → Markdown/CSVs) and a browser log viewer (drag-and-drop).  
-- SHR ensures investigations can reproduce the exact rulebook edition used at the time of action.  
+- SHR ensures investigations can reproduce the exact rulebook edition used at the time of action.
 
 ---
 
@@ -198,7 +193,7 @@ All parameter changes emit events for auditability.
 - Node quickstart & consolidated chainspec  
 - Enhanced fee model (Flat/EIP-1559, per-namespace, tips, burn split)  
 - Audit tools, UI, consolidated docs  
-- Monorepo consolidation (workspace, changelog, helpers)  
+- Monorepo consolidation (workspace, changelog, helpers)
 
 **Next:** Security review, formal verification targets for decay math, and expanded explorer integration.
 
@@ -208,7 +203,7 @@ All parameter changes emit events for auditability.
 
 - **Consensus & governance risks:** PoSA starts with curated authorities; decentralization roadmap and rotation policies mitigate but do not eliminate risks.  
 - **Parameter misconfiguration:** Decay rates, burn splits, and fee models are governance-controlled; strong multi-sig or council procedures recommended.  
-- **Smart contract / pallet bugs:** Pallet code is open source; audits and bounty programs are encouraged prior to large-scale value custody.  
+- **Smart contract / pallet bugs:** Pallet code is open source; audits and bounty programs are encouraged prior to large-scale value custody.
 
 ---
 
@@ -216,7 +211,7 @@ All parameter changes emit events for auditability.
 
 - **License:** MIT — permissive, developer-friendly.  
 - **Brand:** Byzantium-Coin™ (BZFC). All third-party marks belong to their respective owners.  
-- **Regulatory posture:** BZFC is an open-source protocol. Jurisdiction-specific compliance remains the responsibility of operators and integrators. The Θ module assists with attestations but does not replace regulatory advice.  
+- **Regulatory posture:** BZFC is an open-source protocol. Jurisdiction-specific compliance remains the responsibility of operators and integrators. The Θ module assists with attestations but does not replace regulatory advice.
 
 ---
 
@@ -233,7 +228,7 @@ All parameter changes emit events for auditability.
 - **Docs & White Paper:** This document (MIT) + repo docs  
 - **Contact / Email:** info@byzantinefuturecapital.com  
 - **Contracts (if bridged/wrapped):** TBA  
-- **Circulating Supply:** TBA at genesis  
+- **Circulating Supply:** TBA at genesis
 
 This white paper describes protocol design and reference implementation. Final mainnet parameters (authorities, genesis allocations, explorer URLs) will be published before launch.
 
@@ -244,7 +239,7 @@ This white paper describes protocol design and reference implementation. Final m
 - Epoch length: 1 hour  
 - Half-life: 100 years → CLI computes $r_{\text{epoch}}$ (Perquintill) for governance.  
 - Decay mode: `HalfLife { rate_per_epoch }`  
-- Savings lock window: 0 (savers remain fully exempt)  
+- Savings lock window: 0 (savers remain fully exempt)
 
 ---
 
