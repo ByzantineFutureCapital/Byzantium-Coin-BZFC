@@ -1,261 +1,155 @@
-# Byzantium-Coin™ (BZFC)
-
-CoinMarketCap White Paper — v2 (Aug 23, 2025)  
-License: MIT  
-Ticker: BZFC  
-Decimals: 17  
-Max Supply: 21,000,000,000,000 BZFC (21T)  
-Consensus: PoSA — Proof-of-Stake Authority  
+Byzantium-Coin (BZFC) White Paper — v3 (Sept 2025)
+License: MIT
+Ticker: BZFC
+Decimals: 17
+Max Supply: 21,000,000,000 BZFC (21B)
+Consensus: PoSA — Proof-of-Stake Authority
 Tech stack: Rust / Substrate (FRAME)
-
-> Upload note: Save this file as `README.md` at the root of your GitHub repo for best presentation.
-
----
-
-## 1) Abstract
-
-Byzantium-Coin™ (BZFC) is a PoSA-secured Layer-1 chain designed for predictable monetary decay, institutional wrapping, industrial compliance attestations, and actuarial risk pools. Its policy surface is organized under the Smart Heuristic Retrieval (SHR) namespace model, which routes requests to versioned rulebooks so future upgrades never rewrite history. A half-life decay engine—optionally extended to a multi-isotope model—provides flexible, opt-in supply reduction with a hard rule: savings/vault balances never decay.
-
----
-
-## 2) Quick Facts
-
-- **Name / Ticker:** Byzantium-Coin™ / BZFC  
-- **Max Supply:** 21 trillion BZFC (21,000,000,000,000)  
-- **Decimals:** 17 (base unit = $10^{-17}$ BZFC)  
-- **Consensus:** PoSA (authority set via staking & governance)  
-- **Monetary Policy:** Half-life decay (on/off), optional isotope blend, 1 day → 1000 years range; savings exempt  
-- **Fees:** Flexible model (Flat or EIP-1559-style), per-namespace add/mult, optional tips; configurable burn split  
-- **Wrapping:** 1:1 institutional/customer wraps with vault shielding (underlying held in savings)  
-- **Compliance:** Editioned Rulebooks (Θ-II, Θ-III, …) and immutable Attestations  
-- **Insurance:** Ψ pools with pot ratios, reserve floors, and payout caps  
-- **Open Source:** MIT License (developer-friendly)
-
----
-
-## 3) SHR Namespace Architecture
-
-BZFC organizes policy and modules by Greek namespaces with Roman numerals for editions/generations. The SHR Router directs a request to the correct module and edition at the time of action; later editions never retroactively change existing records.
-
-- **Ω (Omega):** Fungible assets, decay models, Crypto-Tics™ (time units), payments, fees, burns, savings vaults  
-  - Examples: Ω-II (second-gen decay schedule), Ω-III (new fee rulebook)  
-- **Θ (Theta):** Industrial compliance, certification, material verification  
-  - Examples: Θ-IV → ASME Section IV code checks  
-- **Ψ (Psi):** Insurance pools, pot ratios, actuarial models  
-  - Examples: Ψ-III → 3rd actuarial release for marine risk  
-- **Λ (Lambda):** Wrapping, derivative issuance, cross-chain certificates  
-  - Examples: Λ-I → first derivative wrapping module for treasury vaults
-
-**Case Example:** A refinery submits a steel batch for verification. SHR routes to Θ-II, locking compliance checks to Rulebook Edition II. Future rulebooks (Θ-III, Θ-IV) do not alter the original audit record.
-
----
-
-## 4) Monetary Policy & Decay
-
-### 4.1 Goals
-
-- Predictable, configurable supply reduction via half-life decay  
-- Opt-in burns that never penalize savings/vault balances  
-- Optional isotope model for multi-component decay tuned to different horizons  
-- Configurable off/on at governance level; 1 day → 1000 years half-life range (max 1000y)
-
-### 4.2 Mechanics (on-chain friendly)
-
-To avoid expensive exponentials on-chain, BZFC uses a per-epoch rate $r_{\text{epoch}}$ with a pooled accounting index:
-
-- **Per-epoch rate from half-life**
-
-$$
-r_{\text{epoch}} = 1 - 2^{-\Delta t / T_{1/2}}
-$$
-
-- **Isotope blend (weights sum to 1)**
-
-$$
-r_{\text{eff}} = \sum_i w_i \cdot \Big(1 - 2^{-\Delta t / T_{1/2,i}}\Big)
-$$
-
-- **Global liquid index update (O(1))**
-
-$$
-\text{index}_{\text{new}} = \text{index}_{\text{old}} \cdot (1 - r_{\text{eff}})
-$$
-
-All liquid balances scale by the index. Savings/vault balances sit outside the decay path and are never decayed.
-
-### 4.3 Savings Exemption
-
-- Users can move funds Liquid ⇄ Savings; savings are decay-free.  
-- Optional anti-gaming lock window (default 0) can snapshot savings at epoch start without penalizing genuine savers.
-
-### 4.4 Isotope Coupling (optional)
-
-- Governance can enable isotope coupling to consider aggregate burns as a signal for component weights/rates.  
-- This remains opt-in and editioned via Ω rulebooks for auditability.
-
----
-
-## 5) Fees, Burns & Treasury
-
-- **Modes:** Off, Flat (base fee per tx), or EIP-1559-style (base fee adjusts by block fill proxy).  
-- **Per-namespace knobs:** additive fee (base units) + multiplier (bps) per module (Ω/Θ/Ψ/Λ).  
-- **Tips:** optional user tips added to total fees.  
-- **Burn split:** BurnBps defines what % of fees is burned vs accrued to Treasury.  
-- **Events & metrics:** emit `FeeCharged{total,burned,treasury}`; track block-level activity.
-
-Note: In production, chains commonly integrate with pallet-transaction-payment for tx fees. BZFC exposes a pallet-level fee framework for fine-grained, namespace-aware policies and on-chain analytics.
-
----
-
-## 6) Wrapping & Vault Shielding (Λ)
-
-- 1:1 wrapping for institutional or customer-specific applications.  
-- Underlying BZFC is moved from Liquid → Savings (vault) during the wrap, making it decay-exempt while wrapped.  
-- `wrap_mint(policy, amount)` and `wrap_burn(policy, amount)` manage lifecycle; policies carry metadata hashes (e.g., IPFS CIDs) and shielding rules.
-
----
-
-## 7) Industrial Compliance & Rulebooks (Θ)
-
-- Register / update / lock Rulebook editions (Θ-II, Θ-III, …). Once locked, a rulebook is immutable.  
-- Attestations bind a `subject_hash` (e.g., steel batch) to an edition with a `payload_hash` (e.g., PMI report) + optional evidence hashes.  
-- Annotations (Info / Supersede / Revoke / Reject) are append-only; prior records remain intact.
-
-**Assurance:** Auditors and regulators can rely on the fact that later editions never rewrite earlier attestations.
-
----
-
-## 8) Insurance & Actuarial Pools (Ψ)
-
-- Governance creates pools with pot ratios, reserve floors, per-claim caps, and min collateral.  
-- **Premiums:** user Liquid → pool vault Savings (decay-exempt while pooled).  
-- **Claims:** vault Savings → claimant Liquid, enforcing solvency rails.  
-- Transparent counters for premiums in / payouts out; designed for actuarial analytics.
-
----
-
-## 9) Consensus & Security (PoSA)
-
-- PoSA: a vetted validator/authority set participates in block production and finality.  
-- Rotation & staking managed via Substrate Session/Aura with governance controls.  
-- Bootstrapping: start with a small authority set; expand/rotate as decentralization increases.
-
----
-
-## 10) Tokenomics Overview
-
-- **Max Supply:** 21,000,000,000,000 BZFC (hard cap)  
-- **Unit Precision:** 17 decimals  
-- **Emissions/Reductions:** Supply reduction driven by decay burns and fee burns per rulebook editions.  
-- **Savings/Vaults:** Never decay; principal protected from automatic burns.  
-- **Wrapping:** Neutral to total supply; wrapped units are claims on saved principal.
-
-**Circulating Supply & Allocation:** To be finalized at mainnet genesis and disclosed in the public chainspec and explorer. BZFC’s framework supports transparent genesis endowments, vesting, and on-chain tracking of burns.
-
----
-
-## 11) Mathematics & Developer Notes
-
-- **Scaling:** Use Perquintill precision (1e18) for per-epoch rates and indices.  
-- **Index accounting:** global pooling ensures O(1) decay application; avoids map iteration.  
-- **Reference CLI:** The repo includes a Half-Life CLI to compute $r_{\text{epoch}}$ for any half-life in 1 day → 1000 years.  
-- **Runtime integration:** Substrate FRAME pallets (Ω/Λ/Θ/Ψ), SHR Router, governance origins, and PoSA wiring stubs are provided.
-
----
-
-## 12) Governance
-
-Governance Origin controls decay mode, isotope parameters, fee model, burn split, namespace fees, savings lock window, rulebook lifecycle, and Ψ pool parameters.  
-Early phases may use Root/Sudo; transition paths include councils or multisig collectives.  
-All parameter changes emit events for auditability.
-
----
-
-## 13) Compliance & Auditability
-
-- **Event-rich design:** `DecayApplied`, `FeeCharged`, `WrapMinted`/`WrapBurned`, `Attested`/`Annotated`, `PremiumPaid`/`ClaimPaid`.  
-- **Tooling:** command-line audit parser (JSONL → Markdown/CSVs) and a browser log viewer (drag-and-drop).  
-- SHR ensures investigations can reproduce the exact rulebook edition used at the time of action.
-
----
-
-## 14) Roadmap & Delivery Status
-
-**Delivered engineering milestones (public repo scaffolds):**
-
-- Ω pallet, PoSA stubs, genesis template, Half-Life CLI  
-- Governance origin + parameter transactions  
-- Pooled decay index (O(1) per epoch)  
-- Tests, chainspec samples, minimal node notes  
-- Λ wraps MVP + vault shielding  
-- Θ rulebooks + attestations + annotations  
-- Ψ pools MVP (premiums/claims with solvency rails)  
-- Node quickstart & consolidated chainspec  
-- Enhanced fee model (Flat/EIP-1559, per-namespace, tips, burn split)  
-- Audit tools, UI, consolidated docs  
-- Monorepo consolidation (workspace, changelog, helpers)
-
-**Next:** Security review, formal verification targets for decay math, and expanded explorer integration.
-
----
-
-## 15) Risk Factors
-
-- **Consensus & governance risks:** PoSA starts with curated authorities; decentralization roadmap and rotation policies mitigate but do not eliminate risks.  
-- **Parameter misconfiguration:** Decay rates, burn splits, and fee models are governance-controlled; strong multi-sig or council procedures recommended.  
-- **Smart contract / pallet bugs:** Pallet code is open source; audits and bounty programs are encouraged prior to large-scale value custody.
-
----
-
-## 16) Legal & Licensing
-
-- **License:** MIT — permissive, developer-friendly.  
-- **Brand:** Byzantium-Coin™ (BZFC). All third-party marks belong to their respective owners.  
-- **Regulatory posture:** BZFC is an open-source protocol. Jurisdiction-specific compliance remains the responsibility of operators and integrators. The Θ module assists with attestations but does not replace regulatory advice.
-
----
-
-## 17) Listing Information (for CMC)
-
-- **Project Name:** Byzantium-Coin™  
-- **Ticker:** BZFC  
-- **Type:** L1 (Substrate-based), custom pallets (Ω/Λ/Θ/Ψ)  
-- **Max Supply:** 21,000,000,000,000  
-- **Decimals:** 17  
-- **Consensus:** PoSA (Aura/Session)  
-- **Explorers:** TBA  
-- **Official Website:** https://byzantinefuturecapital.com  
-- **Docs & White Paper:** This document (MIT) + repo docs  
-- **Contact / Email:** info@byzantinefuturecapital.com  
-- **Contracts (if bridged/wrapped):** TBA  
-- **Circulating Supply:** TBA at genesis
-
-This white paper describes protocol design and reference implementation. Final mainnet parameters (authorities, genesis allocations, explorer URLs) will be published before launch.
-
----
-
-## Appendix A — Example Decay Configuration
-
-- Epoch length: 1 hour  
-- Half-life: 100 years → CLI computes $r_{\text{epoch}}$ (Perquintill) for governance.  
-- Decay mode: `HalfLife { rate_per_epoch }`  
-- Savings lock window: 0 (savers remain fully exempt)
-
----
-
-## Appendix B — Example Isotope Blend
-
-- Components: 30% ($T_{1/2}=1y$), 70% ($T_{1/2}=10y$)  
-- Effective per-epoch rate:
-
-$$
-r_{\text{eff}} = 0.3 \cdot r_1 + 0.7 \cdot r_2
-$$
-
----
-
-## Appendix C — Namespace Codes (suggested)
-
-Ω (Omega) = 937, Θ (Theta) = 920, Ψ (Psi) = 936, Λ (Lambda) = 923 (for internal fee routing; configurable)
-
----
+Official Website: https://byzantinefuturecapital.com
+1) Abstract
+Byzantium-Coin (BZFC) is a PoSA-secured Layer-1 blockchain designed for predictable supply reduction through traditional burn mechanisms, as well as advanced Monetary Half-Life and Part-Life decay models, alongside institutional wrapping, industrial compliance attestations, and actuarial risk pools.
+
+Its modular policy surface is organized under the Smart Heuristic Retrieval (SHR) Namespace Architecture, which ensures all actions are routed to versioned rulebooks so upgrades never rewrite history.
+
+BZFC integrates ISO-compliant mechanisms for financial messaging (ISO 20022), industrial attestations (ISO 9000), and security frameworks (ISO 27000). A pre-market burn-in phase reduced genesis supply from 1 trillion coins to 21 billion coins (final Max Supply). Thereafter, supply policy continues under configurable traditional burns, Monetary Half-Life, Part-Life, or Isotope models, while vault savings remain permanently exempt from decay.
+2) Quick Facts
+Name / Ticker: Byzantium-Coin / BZFC
+Max Supply: 21,000,000,000 (21B, post-burn)
+Decimals: 17 (base unit = 10⁻¹⁷ BZFC)
+Consensus: PoSA (authority set via staking & governance)
+Monetary Policy:
+ - Pre-market burn (1T → 21B, ~60 days or flexible TBA)
+ - Long-term Monetary Half-Life (1 day → 1000 years, savings exempt)
+ - Part-Life fractional models (e.g., 3/16, 13/16)
+ - Isotope blends (multi-component decay)
+Fees: Flexible (Flat, EIP-1559-style, namespace-aware, configurable burn split)
+Wrapping: 1:1 vault-shielded wraps for institutions & derivatives
+Compliance: Editioned Rulebooks (Θ), immutable Attestations (ISO 9000 aligned)
+Insurance: Ψ pools with pot ratios, reserve floors, payout caps
+Open Source: MIT License (developer-friendly)
+3) Pre-Market Burn Phase
+Before mainnet listing, BZFC executed a pre-market burn-in run to compress supply to its final sustainable level:
+
+- Genesis Supply: 1,000,000,000,000 BZFC (1T)
+- Target Supply: 21,000,000,000 BZFC (21B)
+- Duration: Governance-configurable — a short-term aggressive Monetary Half-Life may achieve full compression in ~60 days or timeframe TBA
+- Mechanism: Accelerated Monetary Half-Life decay, optionally coupled with Part-Life tuning
+- Final Max Supply: 21B BZFC (fixed for listings, exchanges, and explorers)
+
+This burn phase is presented transparently as a pre-market supply adjustment, ensuring that CoinMarketCap, CoinGecko, and exchanges recognize the final Max Supply of 21B as the listing figure.
+4) SHR Namespace Architecture
+BZFC organizes policy into Greek-letter namespaces with immutable Roman-numeral editions:
+
+- Ω (Omega): Monetary policy, decay, fees, vaults, savings, payments
+- Θ (Theta): Industrial compliance attestations & certifications (ISO 9000 aligned)
+- Ψ (Psi): Insurance pools, pot ratios, actuarial models
+- Λ (Lambda): Wrapping, derivatives, cross-chain vault certificates
+
+The SHR Router ensures all transactions are routed to the rulebook edition active at the time of action. Later rulebooks never rewrite history.
+5) Monetary Policy & Decay
+- Traditional Burns: One-time supply reductions via governance or protocol events
+- Monetary Half-Life: Governance-controlled half-life, tunable from 1 day → 1000 years
+- Part-Life: Fractional decay mechanisms (e.g., 3/16, 13/16 reductions)
+- Isotope Models: Multi-component decay curves blending multiple half-lives
+- Index Accounting: Efficient pooled decay index (O(1) per epoch)
+- Savings Exemption: Vault balances are decay-free
+- Governance Flexibility: On-chain referenda for all parameters, with event logging
+6) ISO Compliance Mechanisms
+ISO 20022 (Financial Messaging)
+- BZFC transactions, fees, and vault wraps can be exported in ISO 20022-style message schemas
+- Enables interoperability with banks, payment rails, and custodians
+
+ISO 9000 (Industrial Compliance)
+- Θ namespace rulebooks allow audits, material certification, and attestations
+- Example: refinery steel batch audit recorded on-chain, ISO 9001 references locked in edition Θ-II
+
+ISO 27000 (Security)
+- PoSA validators operate under ISO 27001-aligned controls: key management, redundancy, monitoring
+- Governance changes are logged immutably for audit reproducibility
+7) Fees, Burns & Treasury
+- Modes: Off, Flat, or EIP-1559
+- Namespace-aware knobs (Ω/Θ/Ψ/Λ)
+- Tips: optional
+- Burn Split: Governance defines burn vs treasury
+- Events: FeeCharged{total,burned,treasury} for transparency
+8) Wrapping & Vault Shielding (Λ)
+- 1:1 wrapping for institutional tokens or derivatives
+- Underlying BZFC moved from Liquid → Savings vault (decay-exempt)
+- Lifecycle: wrap_mint(policy, amount) / wrap_burn(policy, amount)
+- Metadata: hash references (IPFS CIDs) for compliance and shielding rules
+9) Industrial Compliance & Rulebooks (Θ)
+- Register / lock rulebook editions
+- Attestations bind subject hashes + payload evidence
+- Annotations (Info, Supersede, Revoke) are append-only
+- Aligns with ISO 9000 / 17025 audit principles
+10) Insurance Pools (Ψ)
+- Governance-defined pools: pot ratios, reserve floors, claim caps
+- Premiums: Liquid → Savings vault (decay-exempt)
+- Claims: Savings vault → claimant Liquid
+- Actuarial counters for analytics
+11) Consensus & Security (PoSA)
+- PoSA with authority rotation & staking
+- Bootstraps with curated set; decentralization roadmap
+- Substrate Session/Aura integration
+12) Governance
+- Controls decay parameters, isotope blends, fees, Ψ pool configs, and rulebook lifecycle
+- Parameter changes emit auditable events
+- Transition path: Root/Sudo → councils → collectives
+13) Compliance & Auditability
+- Event-rich logs (DecayApplied, WrapMinted, Attested, PremiumPaid)
+- CLI + browser tools export records in JSONL → CSV → ISO 20022 XML
+- SHR ensures rulebook edition reproducibility
+14) Tokenomics (Post-Burn)
+- Max Supply: 21B (fixed, post-burn)
+- Circulating Supply: To be set at mainnet genesis (transparent chainspec)
+- Savings Vaults: Principal protected from decay
+- Wrapping: Neutral to total supply; represents vault-shielded coins
+- Emissions/Reductions: Driven by traditional burns, Monetary Half-Life, Part-Life, Isotope models, and fee burns
+15) Roadmap & Delivery Status
+Delivered:
+- Ω pallet (decay engine, savings, fees)
+- SHR Router + governance stubs
+- PoSA authority scaffolds
+- Half-Life CLI tool
+- Λ wraps MVP + vault shielding
+- Θ rulebooks & attestations
+- Ψ pools MVP
+
+Next:
+- Security audits, formal verification of decay math
+- Expanded explorer integration
+- ISO 20022 schema exports
+- Industrial pilot integrations (Θ-III/IV)
+16) Risk Factors
+- Governance misconfigurations (decay, fees, burn splits)
+- PoSA centralization risk at early phases
+- Smart contract / pallet bugs
+- Regulatory risks remain jurisdiction-dependent
+17) Listing Information (for CMC)
+Project Name: Byzantium-Coin
+Ticker: BZFC
+Type: Layer-1 (Substrate FRAME, custom pallets)
+Max Supply: 21,000,000,000 BZFC
+Decimals: 17
+Consensus: PoSA (Aura/Session)
+Official Website: https://byzantinefuturecapital.com
+Docs: This White Paper v3 + repo docs
+Email: info@byzantinefuturecapital.com
+Circulating Supply: To be disclosed at mainnet genesis
+Appendices
+A — Pre-Market Burn Parameters
+- Genesis Supply: 1T
+- Target Supply: 21B
+- Duration: ~60 days or governance-defined (TBA)
+- Half-life: ~10.8 days
+
+B — Isotope Decay Models
+- Example Blend: 30% T½ = 1 year, 70% T½ = 10 years
+- Effective per-epoch decay:
+  r_eff = 0.3 * r1 + 0.7 * r2
+
+C — Namespace Codes
+- Ω = 937 (Monetary Policy, Decay, Savings)
+- Θ = 920 (Compliance Rulebooks)
+- Ψ = 936 (Insurance Pools)
+- Λ = 923 (Wrapping & Vault Shielding)
